@@ -96,11 +96,11 @@ if clicked:
                         response = requests.get(url)
                         img = Image.open(BytesIO(response.content))
                         #img.save('/Users/aadithyuenair/Documents/Projects/yarnit/knowledge-graph-api/images/{}-{}.png'.format(prompt,ind))
-                        st.image(img, caption='{}-{}'.format(prompt,ind), use_column_width=True)
+                        st.image(img, caption='Design-{}'.format(ind+1), use_column_width=True)
                         btn = st.download_button(
                                                     label="Download image",
                                                     data=BytesIO(response.content),
-                                                    file_name='{}-{}.png'.format(prompt,ind), 
+                                                    file_name='Design-{}.png'.format(ind+1), 
                                                     mime="image/png"
                                                 )
                         #st.download_button(label="Download", data=img, file_name='{}-{}.png'.format(prompt,ind), mime='application/octet-stream')
@@ -116,7 +116,7 @@ if clicked:
             time.sleep(2)
             my_bar = st.progress(0)
             prompt = prompt_builder(input_text,design_choice,sub_design_choice,color_choice,camera_angles,illumination_type)
-            st.write(prompt)
+            #st.write(prompt)
             try:
                 API_URL = "https://api-inference.huggingface.co/models/stabilityai/stable-diffusion-2"
                 headers = {"Authorization": f"Bearer {huggingface_key}"}
