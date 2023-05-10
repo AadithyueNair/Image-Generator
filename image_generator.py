@@ -21,35 +21,16 @@ def prompt_builder(input_text,design_choice,sub_design_choice,color_choice,camer
         st.write("Include objects, colours, locations, surroundings, people to generate relevant images")
     return prompt
 
-# Define a function to save the topic to a text file
-#def save_topic_to_file(topic):
-#    with open("topics.txt", "r+") as f:
-#        topics = f.read().splitlines()
- #       if topic not in topics:
- #def get_saved_topics():
-  #  with open("topics.txt", "r") as f:
- #       topics = [line.strip() for line in f.readlines()]
- #   return topics
 
 st.title("ImaGen - Image Generator")
-#st.write("This is an Image generator that uses OpenAI's API to generate images for your posts. You can either select the colors from the dropdown menu or enter the colors as text. After selecting the colors, select the type of background design you want to generate. You can also select the number of background designs to generate and the size of the background design. Finally, enter your API key and click on the 'Generate Background Design' button to generate the background design.")
 
-tab1, tab2 = st.tabs(["OpenAI", "Stable Diffusion"])
 with st.sidebar:
     st.title("ImaGen")
     st.subheader("Image Generator")
     openai_key = st.text_input("API-Key: ",placeholder = "Enter your API key here")
-    huggingface_key = st.text_input("HuggingFace-Key: ",placeholder = "Enter your API key here")
     st.write("---------------------------------------------")
     st.write("Include objects, colours, locations, surroundings, people...")
-    input_text = st.text_input("Add text input here:",placeholder = "Include objects, colours, locations, surroundings, people...")
-    #history = st.checkbox("See previously tried topics",key = "design")
-    #if history:
-    #    # Get the list of saved topics and display them in a dropdown
-    #    suggested_topics = get_saved_topics()
-    #    input_text = st.selectbox("Select a topic:", suggested_topics)
-    #if input_text:
-    #    save_topic_to_file(input_text)
+    input_text = st.text_input("Add text input here:",placeholder = "An astronaut reading a book in space")
     st.write("---------------------------------------------")
     st.write("Select the styles ")
     design_choice = st.selectbox("Image category",("photography","digital art","fine art","none"))
@@ -75,72 +56,37 @@ with st.sidebar:
     
 
 if clicked:
-    with tab1:
-        if len(openai_key) > 1:
-            openai.api_key = openai_key
-            st.write("Generating Images...")
-            time.sleep(2)
-            my_bar = st.progress(0)
-            prompt = prompt_builder(input_text,design_choice,sub_design_choice,color_choice,camera_angles,illumination_type)
-            response = openai.Image.create(
-            prompt=prompt,
-            n=num,
-            size=size_choice
-            )
-            #image_url = response['data'][0]['url']
-            data = response['data']
-            try:
-                with st.container():
-                    for ind,res in enumerate(data):
-                        url = res['url']
-                        response = requests.get(url)
-                        img = Image.open(BytesIO(response.content))
-                        #img.save('/Users/aadithyuenair/Documents/Projects/yarnit/knowledge-graph-api/images/{}-{}.png'.format(prompt,ind))
-                        st.image(img, caption='Design-{}'.format(ind+1), use_column_width=True)
-                        btn = st.download_button(
-                                                    label="Download image",
-                                                    data=BytesIO(response.content),
-                                                    file_name='Design-{}.png'.format(ind+1), 
-                                                    mime="image/png"
-                                                )
-                        #st.download_button(label="Download", data=img, file_name='{}-{}.png'.format(prompt,ind), mime='application/octet-stream')
-                        my_bar.progress((ind+1)/num)
-            except Exception as e:
-                st.write(e.args[0])
-                st.error('Please enter a valid API key!', icon="🚨") 
-        else:
-            st.error('Please enter an API key!', icon="🚨")
-    with tab2:
-        if len(huggingface_key) > 1:
-            st.write("Generating Images...")
-            time.sleep(2)
-            my_bar = st.progress(0)
-            prompt = prompt_builder(input_text,design_choice,sub_design_choice,color_choice,camera_angles,illumination_type)
-            #st.write(prompt)
-            try:
-                API_URL = "https://api-inference.huggingface.co/models/stabilityai/stable-diffusion-2"
-                headers = {"Authorization": f"Bearer {huggingface_key}"}
-
-                def query(payload):
-                    response = requests.post(API_URL, headers=headers, json=payload)
-                    return response.content
-                image_bytes = query({
-                    "inputs": prompt,
-                })
-                image = Image.open(BytesIO(image_bytes))
-                st.image(image, caption=prompt, use_column_width=True)
-                btn = st.download_button(
-                                            label="Download image",
-                                            data=BytesIO(image_bytes),
-                                            file_name=prompt, 
-                                            mime="image/png"
-                                        )
-            except Exception as e:
-                st.write(e.args[0])
-                st.error('Please enter a valid API key!', icon="🚨") 
-        else:
-            st.error('Please enter an API key!', icon="🚨")
-#with open ('/Users/aadithyuenair/Documents/Projects/yarnit/knowledge-graph-api/images/{}-{}.png'.format(prompt,ind), 'rb') as f:
-#   bytes = f.read()
-#  st.image(bytes, caption='{}-{}'.format(prompt,ind), use_column_width=True)
-
+    if len(openai_key) > 1:
+        openai.api_key = openai_key
+        st.write("Generating Images...")
+        time.sleep(2)
+        my_bar = st.progress(0)
+        prompt = prompt_builder(input_text,design_choice,sub_design_choice,color_choice,camera_angles,illumination_type)
+        response = openai.Image.create(
+        prompt=prompt,
+        n=num,
+        size=size_choice
+        )
+        #image_url = response['data'][0]['url']
+        data = response['data']
+        try:
+            with st.container():
+                for ind,res in enumerate(data):
+                    url = res['url']
+                    response = requests.get(url)
+                    img = Image.open(BytesIO(response.content))
+                    #img.save('/Users/aadithyuenair/Documents/Projects/yarnit/knowledge-graph-api/images/{}-{}.png'.format(prompt,ind))
+                    st.image(img, caption='{}-{}'.format(prompt,ind), use_column_width=True)
+                    btn = st.download_button(
+                                                label="Download image",
+                                                data=BytesIO(response.content),
+                                                file_name='{}-{}.png'.format(prompt,ind), 
+                                                mime="image/png"
+                                            )
+                    #st.download_button(label="Download", data=img, file_name='{}-{}.png'.format(prompt,ind), mime='application/octet-stream')
+                    my_bar.progress((ind+1)/num)
+        except Exception as e:
+            st.write(e.args[0])
+            st.error('Please enter a valid API key!', icon="🚨") 
+    else:
+        st.error('Please enter an API key!', icon="🚨")
