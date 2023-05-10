@@ -76,11 +76,11 @@ if clicked:
                     response = requests.get(url)
                     img = Image.open(BytesIO(response.content))
                     #img.save('/Users/aadithyuenair/Documents/Projects/yarnit/knowledge-graph-api/images/{}-{}.png'.format(prompt,ind))
-                    st.image(img, caption='{}-{}'.format(prompt,ind), use_column_width=True)
+                    st.image(img, caption='Image-{}'.format(ind+1), use_column_width=True)
                     btn = st.download_button(
                                                 label="Download image",
                                                 data=BytesIO(response.content),
-                                                file_name='{}-{}.png'.format(prompt,ind), 
+                                                file_name='Image-{}.png'.format(ind+1), 
                                                 mime="image/png"
                                             )
                     #st.download_button(label="Download", data=img, file_name='{}-{}.png'.format(prompt,ind), mime='application/octet-stream')
